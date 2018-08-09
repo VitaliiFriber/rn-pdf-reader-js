@@ -13,7 +13,7 @@ export default () => ( // eslint-disable-line react/display-name
         strokeLinejoin="round"
         className=""
     >
-        <polyline points="5 12 19 12" />
-        <polyline points="12 5 12 19" />
+        <polyline points="5 12 19 12"/>
+        <polyline points="12 5 12 19"/>
     </svg>
 );

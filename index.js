@@ -62,9 +62,8 @@ function readAsTextAsync(mediaBlob: Blob): Promise<string> {
     });
 }
 
-async function fetchPdfAsync(url: string, headers): Promise<string> {
-    console.log(headers);
-    const result = await fetch(url, {headers});
+async function fetchPdfAsync(url: string): Promise<string> {
+    const result = await fetch(url);
     const mediaBlob = await result.blob();
     return readAsTextAsync(mediaBlob);
 }
@@ -128,7 +127,7 @@ class PdfReader extends Component<Props, State> {
 
             let data;
             if (source.uri && source.uri.startsWith('http') || source.uri && source.uri.startsWith('file')) {
-                data = await fetchPdfAsync(source.uri,source.headers);
+                data = await fetchPdfAsync(source.uri);
             } else if (source.base64 && source.base64.startsWith('data')) {
                 data = source.base64;
             } else {
