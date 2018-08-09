@@ -1,7 +1,7 @@
 // @flow
-import React, { Component } from 'react';
-import { WebView, View, ActivityIndicator, Platform, StyleSheet } from 'react-native';
-import { FileSystem } from 'expo';
+import React, {Component} from 'react';
+import {WebView, View, ActivityIndicator, Platform, StyleSheet} from 'react-native';
+import {FileSystem} from 'expo';
 // removed constants for my application with react Navigation.
 // This should probably change to be an optional prop to disable the statusbar offset
 
@@ -29,11 +29,12 @@ function viewerHtml(base64: string): string {
  </html>
 `;
 }
+
 const bundleJsPath = `${cacheDirectory}bundle.js`;
 const htmlPath = `${cacheDirectory}index.html`;
 
 async function writeWebViewReaderFileAsync(data: string): Promise<*> {
-    const { exist, md5 } = await getInfoAsync(bundleJsPath, { md5: true });
+    const {exist, md5} = await getInfoAsync(bundleJsPath, {md5: true});
     const bundleContainer = require('./bundleContainer');
     if (!exist || bundleContainer.getBundleMd5() !== md5) {
         await writeAsStringAsync(bundleJsPath, bundleContainer.getBundle());
@@ -62,15 +63,15 @@ function readAsTextAsync(mediaBlob: Blob): Promise<string> {
     });
 }
 
-async function fetchPdfAsync(url: string): Promise<string> {
-    const result = await fetch(url);
+async function fetchPdfAsync(url: string, headers): Promise<string> {
+    const result = await fetch(url, {headers});
     const mediaBlob = await result.blob();
     return readAsTextAsync(mediaBlob);
 }
 
 const Loader = () => (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
-        <ActivityIndicator size="large" />
+    <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" color={"#9F3E3E"}/>
     </View>
 );
 
@@ -119,15 +120,15 @@ class PdfReader extends Component<Props, State> {
 
     async init() {
         try {
-            const { source } = this.props;
+            const {source} = this.props;
             const ios = Platform.OS === 'ios';
             const android = Platform.OS === 'android';
 
-            this.setState({ ios, android });
+            this.setState({ios, android});
 
             let data;
             if (source.uri && source.uri.startsWith('http') || source.uri && source.uri.startsWith('file')) {
-                data = await fetchPdfAsync(source.uri);
+                data = await fetchPdfAsync(source.uri, source.headers);
             } else if (source.base64 && source.base64.startsWith('data')) {
                 data = source.base64;
             } else {
@@ -139,7 +140,7 @@ class PdfReader extends Component<Props, State> {
                 await writeWebViewReaderFileAsync(data);
             }
 
-            this.setState({ ready: !!data, data });
+            this.setState({ready: !!data, data});
         } catch (error) {
             alert('Sorry, an error occurred.');
             console.error(error);
@@ -159,7 +160,7 @@ class PdfReader extends Component<Props, State> {
                 <View style={styles.container}>
                     <WebView
                         style={styles.webview}
-                        source={{ uri: data }}
+                        source={{uri: data}}
                     />
                 </View>
             );
@@ -170,7 +171,7 @@ class PdfReader extends Component<Props, State> {
                 <View style={styles.container}>
                     <WebView
                         style={styles.webview}
-                        source={{ uri: htmlPath }}
+                        source={{uri: htmlPath}}
                         mixedContentMode="always"
                         scrollEnabled
                         height="100vh"
@@ -179,7 +180,7 @@ class PdfReader extends Component<Props, State> {
             );
         }
 
-        return <Loader />;
+        return <Loader/>;
     }
 }
 
